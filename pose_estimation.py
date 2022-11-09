@@ -27,12 +27,9 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     cv2.aruco_dict = cv2.aruco.Dictionary_get(aruco_dict_type)
     parameters = cv2.aruco.DetectorParameters_create()
 
-
-    corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, cv2.aruco_dict,parameters=parameters,
-        cameraMatrix=matrix_coefficients,
-        distCoeff=distortion_coefficients)
-
-        # If markers are detected
+    corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, cv2.aruco_dict,parameters=parameters)
+    
+    # If markers are detected
     if len(corners) > 0:
         for i in range(0, len(ids)):
             # Estimate pose of each marker and return the values rvec and tvec---(different from those of camera coefficients)
@@ -42,7 +39,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             cv2.aruco.drawDetectedMarkers(frame, corners) 
 
             # Draw Axis
-            cv2.aruco.drawAxis(frame, matrix_coefficients, distortion_coefficients, rvec, tvec, 0.01)  
+            cv2.drawFrameAxes(frame, matrix_coefficients, distortion_coefficients, rvec, tvec, 0.01)  
 
     return frame
 
