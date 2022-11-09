@@ -12,7 +12,7 @@ import argparse
 import time
 
 
-def pose_esitmation(frame, aruco_dict_type, matrix_coefficients, distortion_coefficients):
+def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coefficients):
 
     '''
     frame - Frame from the video stream
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         if not ret:
             break
         
-        output = pose_esitmation(frame, aruco_dict_type, k, d)
+        output = pose_estimation(frame, aruco_dict_type, k, d)
 
         cv2.imshow('Estimated Pose', output)
 
