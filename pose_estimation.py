@@ -6,6 +6,7 @@ python pose_estimation.py --K_Matrix calibration_matrix.npy --D_Coeff distortion
 
 import numpy as np
 import cv2
+from datetime import datetime
 import sys
 from utils import ARUCO_DICT
 import argparse
@@ -29,13 +30,33 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
 
     corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, cv2.aruco_dict,parameters=parameters)
     
+    with open('robot_pose.txt', 'r') as file:
+        robot_data = file.readlines()
+
+    with open('warhead_pose.txt', 'r') as file:
+        warhead_data = file.readlines()
+
     # If markers are detected
     if len(corners) > 0:
         for i in range(0, len(ids)):
             # Estimate pose of each marker and return the values rvec and tvec---(different from those of camera coefficients)
             rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.02, matrix_coefficients,
                                                                        distortion_coefficients)
-            print(ids[i], tvec, rvec)
+            
+            curr_id = ids[i][0]
+
+            str_to_write = str(curr_id)
+            for element in tvec[0][0]:
+                str_to_write = str_to_write + "," + str(element)
+            for element in rvec[0][0]:
+                str_to_write = str_to_write + "," + str(element)
+            current_date = datetime.now()
+            str_to_write += "," + current_date.isoformat() + ";\n"
+            
+            if curr_id >= 0 and curr_id < 6:
+                robot_data[curr_id] = str_to_write
+            if curr_id >= 6 and curr_id < 12:
+                warhead_data[curr_id - 6] = str_to_write
 
             # Draw a square around the markers
             cv2.aruco.drawDetectedMarkers(frame, corners) 
@@ -43,14 +64,19 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             # Draw Axis
             cv2.drawFrameAxes(frame, matrix_coefficients, distortion_coefficients, rvec, tvec, 0.01)  
 
+    with open('robot_pose.txt', 'w') as file:
+        file.writelines(robot_data)
+    with open('warhead_pose.txt', 'w') as file:
+        file.writelines(warhead_data)
+
     return frame
 
 if __name__ == '__main__':
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("-k", "--K_Matrix", required=True, help="Path to calibration matrix (numpy file)")
-    ap.add_argument("-d", "--D_Coeff", required=True, help="Path to distortion coefficients (numpy file)")
-    ap.add_argument("-t", "--type", type=str, default="DICT_ARUCO_ORIGINAL", help="Type of ArUCo tag to detect")
+    ap.add_argument("-k", "--K_Matrix", required=False, help="Path to calibration matrix (numpy file)", default="calibration_matrix.npy")
+    ap.add_argument("-d", "--D_Coeff", required=False, help="Path to distortion coefficients (numpy file)", default="distortion_coefficients.npy")
+    ap.add_argument("-t", "--type", type=str, help="Type of ArUCo tag to detect", default="DICT_4X4_100")
     args = vars(ap.parse_args())
 
     
@@ -67,8 +93,9 @@ if __name__ == '__main__':
 
     video = cv2.VideoCapture(0)
     time.sleep(2.0)
-
-    while True:
+    
+    i = 0
+    while i >= 0:
         ret, frame = video.read()
 
         if not ret:
@@ -82,6 +109,7 @@ if __name__ == '__main__':
         if key == ord('q'):
             print("q")
             break
+        i += 1
 
     video.release()
     cv2.destroyAllWindows()
