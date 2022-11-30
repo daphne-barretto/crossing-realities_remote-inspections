@@ -6,6 +6,10 @@ from irobot_edu_sdk.backend.bluetooth import Bluetooth
 from irobot_edu_sdk.robots import event, hand_over, Color, Robot, Root, Create3
 from irobot_edu_sdk.music import Note
 
+JOYSTICK_Y_THRESHOLD = 0.5
+JOYSTICK_X_TRANSLATE_VALUE = 5
+JOYSTICK_Y_ROTATE_VALUE = 1
+
 backend = Bluetooth()
 robot = Root(backend)
 
@@ -14,19 +18,23 @@ async def move_from_text(robot):
     while True:
         print('move_from_text')
 
-        move_robot_path = "/Users/testadmin/Desktop/code/mae418/ArUCo-Markers-Pose-Estimation-Generation-Python/move_robot.txt"
-        with open(move_robot_path, 'r') as file:
-            move_robot_data = [int(x) for x in file.readlines()[0].split(",")]
+        joystick_file_path = "C:\\Users\\PrincetonVR\\Documents\\Unreal Projects\\MyProject_VRTemplate_Robots\\Content\\Files\\joystick_values.txt"
+        with open(joystick_file_path, 'r') as file:
+            move_robot_data = [int(x) for x in file.readlines()[0].split(",")][0]
 
         print(move_robot_data)
 
-        forward_backward_change, turn_left_change, turn_right_change = move_robot_data
-        if forward_backward_change != 0:
-            await robot.move(forward_backward_change)
-        if turn_left_change != 0:
-            await robot.turn_left(turn_left_change)
-        elif turn_right_change != 0:
-            await robot.turn_right(turn_right_change)
+        joystick_x_value, joystick_y_value, timestamp = move_robot_data
+        if abs(joystick_y_value) > JOYSTICK_Y_THRESHOLD:
+            if joystick_y_value > 0:
+                await robot.turn_right(JOYSTICK_Y_ROTATE_VALUE)
+            else:
+                await robot.turn_left(JOYSTICK_Y_ROTATE_VALUE)
+        elif abs(joystick_x_value) > 0:
+            if joystick_x_value > 0:
+                await robot.move(JOYSTICK_X_TRANSLATE_VALUE)
+            else:
+                await robot.move(-JOYSTICK_X_TRANSLATE_VALUE)
 
 @event(robot.when_bumped, [])
 async def bump(robot):
