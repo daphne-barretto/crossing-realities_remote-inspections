@@ -50,13 +50,19 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             # Estimate pose of each marker and return the values rvec and tvec---(different from those of camera coefficients)
             rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.02, matrix_coefficients,
                                                                        distortion_coefficients)
-            
+
             curr_id = ids[i][0]
+
+            # convert rotation vector to euler angles
+            # from https://github.com/mpatacchiola/deepgaze/issues/3#issuecomment-345405613
+            rot_matrix = cv2.Rodrigues(rvec)[0]
+            proj_matrix = np.hstack((rot_matrix, tvec[0][0].reshape((3,1))))
+            euler_angles = cv2.decomposeProjectionMatrix(proj_matrix)[6]
 
             str_to_write = str(curr_id)
             for element in tvec[0][0]:
                 str_to_write = str_to_write + "," + str(element)
-            for element in rvec[0][0]:
+            for element in euler_angles:
                 str_to_write = str_to_write + "," + str(element)
             current_date = datetime.now()
             str_to_write += "," + current_date.isoformat() + ";\n"
