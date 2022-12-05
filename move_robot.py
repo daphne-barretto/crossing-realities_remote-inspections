@@ -6,12 +6,12 @@ from irobot_edu_sdk.backend.bluetooth import Bluetooth
 from irobot_edu_sdk.robots import event, hand_over, Color, Robot, Root, Create3
 from irobot_edu_sdk.music import Note
 
-JOYSTICK_Y_TRANSLATE_VALUE = 5
+JOYSTICK_Y_TRANSLATE_VALUE = 10
 JOYSTICK_X_THRESHOLD = 0.5
-JOYSTICK_X_ROTATE_VALUE = 1
+JOYSTICK_X_ROTATE_VALUE = 10
 
 backend = Bluetooth()
-robot = Root(backend)
+robot = Create3(backend)
 
 @event(robot.when_play)
 async def move_from_text(robot):
@@ -19,12 +19,16 @@ async def move_from_text(robot):
         print('move_from_text')
 
         joystick_file_path = "C:\\Users\\PrincetonVR\\Documents\\Unreal Projects\\MyProject_VRTemplate_Robots\\Content\\Files\\joystick_values.txt"
-        with open(joystick_file_path, 'r') as file:
-            move_robot_data = [int(x) for x in file.readlines()[0].split(",")][0]
+        try:
+            with open(joystick_file_path, 'r') as file:
+                move_robot_data = [float(x) for x in file.readlines()[0].split(",")]
+        except PermissionError:
+            print("couldn't open")
+            continue
 
         print(move_robot_data)
 
-        joystick_x_value, joystick_y_value, timestamp = move_robot_data
+        joystick_y_value, joystick_x_value = move_robot_data
         if abs(joystick_x_value) > JOYSTICK_X_THRESHOLD:
             if joystick_x_value > 0:
                 await robot.turn_right(JOYSTICK_X_ROTATE_VALUE)
