@@ -28,6 +28,8 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     cv2.aruco_dict = cv2.aruco.Dictionary_get(aruco_dict_type)
     parameters = cv2.aruco.DetectorParameters_create()
 
+    corners = []
+    prev_corners = corners
     corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, cv2.aruco_dict,parameters=parameters)
     
     robot_file_path = "C:\\Users\\PrincetonVR\\Documents\\Unreal Projects\\MyProject_VRTemplate_Robots\\Content\\Files\\robot_pose.txt"
@@ -48,7 +50,10 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     if len(corners) > 0:
         for i in range(0, len(ids)):
             # Estimate pose of each marker and return the values rvec and tvec---(different from those of camera coefficients)
-            rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.02, matrix_coefficients,
+            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.02, matrix_coefficients,
+                                                                       distortion_coefficients)
+            if len(prev_corners) > 0:
+                prev_rvec, _, _ = cv2.aruco.estimatePoseSingleMarkers(prev_corners[i], 0.02, matrix_coefficients,
                                                                        distortion_coefficients)
 
             curr_id = ids[i][0]
@@ -58,12 +63,27 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             rot_matrix = cv2.Rodrigues(rvec)[0]
             proj_matrix = np.hstack((rot_matrix, tvec[0][0].reshape((3,1))))
             euler_angles = cv2.decomposeProjectionMatrix(proj_matrix)[6]
+            if len(prev_corners) > 0:
+                prev_rot_matrix = cv2.Rodrigues(prev_rvec)[0]
+                prev_proj_matrix = np.hstack((prev_rot_matrix, tvec[0][0].reshape((3,1))))
+                prev_euler_angles = cv2.decomposeProjectionMatrix(prev_proj_matrix)[6]
+            else:
+                prev_euler_angles = []
+
+            flicker = False
+            for i in range(len(prev_euler_angles)):
+                diff = abs(prev_euler_angles[i] - euler_angles[i])
+                if diff > 90 and diff < 270:
+                    flicker = True
+            if flicker:
+                print("flicker")
+                continue
 
             str_to_write = str(curr_id)
             for element in tvec[0][0]:
                 str_to_write = str_to_write + "," + str(element)
             for element in euler_angles:
-                str_to_write = str_to_write + "," + str(element[0])
+                str_to_write = str_to_write + "," + str(element)
             current_date = datetime.now()
             str_to_write += "," + current_date.isoformat() + ";\n"
             
