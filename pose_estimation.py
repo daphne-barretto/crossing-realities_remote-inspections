@@ -84,8 +84,10 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
                 str_to_write = str_to_write + "," + str(element)
             for element in euler_angles:
                 str_to_write = str_to_write + "," + str(element)
-            current_date = datetime.now()
-            str_to_write += "," + current_date.isoformat() + ";\n"
+            curr_datetime = datetime.now()
+            formatted_curr_datetime = "%04d.%02d.%02d-%02d.%02d.%02d" % (curr_datetime.year, curr_datetime.month, curr_datetime.day, curr_datetime.hour, curr_datetime.minute, curr_datetime.second)
+            str_to_write += "," + formatted_curr_datetime + ";\n"
+            # print(str_to_write)
             
             if curr_id >= 0 and curr_id < 6:
                 robot_data[curr_id] = str_to_write
