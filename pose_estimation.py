@@ -83,7 +83,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             for element in tvec[0][0]:
                 str_to_write = str_to_write + "," + str(element)
             for element in euler_angles:
-                str_to_write = str_to_write + "," + str(element)
+                str_to_write = str_to_write + "," + str(element[0])
             curr_datetime = datetime.now()
             formatted_curr_datetime = "%04d.%02d.%02d-%02d.%02d.%02d" % (curr_datetime.year, curr_datetime.month, curr_datetime.day, curr_datetime.hour, curr_datetime.minute, curr_datetime.second)
             str_to_write += "," + formatted_curr_datetime + ";\n"
