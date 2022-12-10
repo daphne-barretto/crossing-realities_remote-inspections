@@ -50,10 +50,10 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     if len(corners) > 0:
         for i in range(0, len(ids)):
             # Estimate pose of each marker and return the values rvec and tvec---(different from those of camera coefficients)
-            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.02, matrix_coefficients,
+            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.168, matrix_coefficients,
                                                                        distortion_coefficients)
             if len(prev_corners) > 0:
-                prev_rvec, _, _ = cv2.aruco.estimatePoseSingleMarkers(prev_corners[i], 0.02, matrix_coefficients,
+                prev_rvec, _, _ = cv2.aruco.estimatePoseSingleMarkers(prev_corners[i], 0.168, matrix_coefficients,
                                                                        distortion_coefficients)
 
             curr_id = ids[i][0]
@@ -87,7 +87,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             curr_datetime = datetime.now()
             formatted_curr_datetime = "%04d.%02d.%02d-%02d.%02d.%02d" % (curr_datetime.year, curr_datetime.month, curr_datetime.day, curr_datetime.hour, curr_datetime.minute, curr_datetime.second)
             str_to_write += "," + formatted_curr_datetime + ";\n"
-            # print(str_to_write)
+            print(str_to_write)
             
             if curr_id >= 0 and curr_id < 6:
                 robot_data[curr_id] = str_to_write
