@@ -41,10 +41,4 @@ async def move_from_text(robot):
             else:
                 await robot.move(-JOYSTICK_Y_TRANSLATE_VALUE)
 
-# @event(robot.when_bumped, [])
-# async def bump(robot):
-#     while True:
-#         print('bump')
-
-
 robot.play()
