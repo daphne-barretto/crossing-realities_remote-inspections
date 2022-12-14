@@ -6,8 +6,9 @@ from irobot_edu_sdk.backend.bluetooth import Bluetooth
 from irobot_edu_sdk.robots import event, hand_over, Color, Robot, Root, Create3
 from irobot_edu_sdk.music import Note
 
+JOYSTICK_Y_THRESHOLD = 0.3
 JOYSTICK_Y_TRANSLATE_VALUE = 10
-JOYSTICK_X_THRESHOLD = 0.5
+JOYSTICK_X_THRESHOLD = 0.3
 JOYSTICK_X_ROTATE_VALUE = 10
 
 backend = Bluetooth()
@@ -34,16 +35,16 @@ async def move_from_text(robot):
                 await robot.turn_right(JOYSTICK_X_ROTATE_VALUE)
             else:
                 await robot.turn_left(JOYSTICK_X_ROTATE_VALUE)
-        elif abs(joystick_y_value) > 0:
+        elif abs(joystick_y_value) > JOYSTICK_Y_THRESHOLD:
             if joystick_y_value > 0:
                 await robot.move(JOYSTICK_Y_TRANSLATE_VALUE)
             else:
                 await robot.move(-JOYSTICK_Y_TRANSLATE_VALUE)
 
-@event(robot.when_bumped, [])
-async def bump(robot):
-    while True:
-        print('bump')
+# @event(robot.when_bumped, [])
+# async def bump(robot):
+#     while True:
+#         print('bump')
 
 
 robot.play()
