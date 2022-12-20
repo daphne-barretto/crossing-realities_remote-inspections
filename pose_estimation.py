@@ -1,7 +1,7 @@
 # pose_estimation.py, Daphne Barretto
 # estimate the position of ArUCo markers specified for the robot and warhead, and
 # write their ids, positions, angles, and timestamps to the appropriate files
-# adapted from GSNCodes pose_estimation.py at https://github.com/GSNCodes/ArUCo-Markers-Pose-Estimation-Generation-Python/blob/main/pose_estimation.py
+# adapted from https://github.com/GSNCodes/ArUCo-Markers-Pose-Estimation-Generation-Python/blob/main/pose_estimation.py
 
 '''
 Sample Usage:-
