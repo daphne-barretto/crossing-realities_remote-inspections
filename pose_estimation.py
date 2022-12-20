@@ -1,15 +1,20 @@
+# pose_estimation.py, Daphne Barretto
+# estimate the position of ArUCo markers specified for the robot and warhead, and
+# write their ids, positions, angles, and timestamps to the appropriate files
+# adapted from GSNCodes pose_estimation.py at https://github.com/GSNCodes/ArUCo-Markers-Pose-Estimation-Generation-Python/blob/main/pose_estimation.py
+
 '''
 Sample Usage:-
-python pose_estimation.py --K_Matrix calibration_matrix.npy --D_Coeff distortion_coefficients.npy --type DICT_5X5_100
+python pose_estimation.py --K_Matrix calibration_matrix.npy --D_Coeff distortion_coefficients.npy --type DICT_4X4_100
 '''
 
-
-import numpy as np
-import cv2
 from datetime import datetime
-import sys
 from utils import ARUCO_DICT
+
 import argparse
+import cv2
+import numpy as np
+import sys
 import time
 
 
@@ -28,10 +33,12 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     cv2.aruco_dict = cv2.aruco.Dictionary_get(aruco_dict_type)
     parameters = cv2.aruco.DetectorParameters_create()
 
+    # detectMarkers()
     corners = []
     prev_corners = corners
     corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, cv2.aruco_dict,parameters=parameters)
     
+    # try to read robot file
     robot_file_path = "C:\\Users\\PrincetonVR\\Documents\\Unreal Projects\\MyProject_VRTemplate_Robots\\Content\\Files\\robot_pose.txt"
     try:
         with open(robot_file_path, 'r') as file:
@@ -39,6 +46,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     except PermissionError:
         return
 
+    # try to read warhead file
     warhead_file_path = "C:\\Users\\PrincetonVR\\Documents\\Unreal Projects\\MyProject_VRTemplate_Robots\\Content\\Files\\warhead_pose.txt"
     try:
         with open(warhead_file_path, 'r') as file:
@@ -52,6 +60,8 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             # Estimate pose of each marker and return the values rvec and tvec---(different from those of camera coefficients)
             rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.168, matrix_coefficients,
                                                                        distortion_coefficients)
+
+            # save previous rvec
             if len(prev_corners) > 0:
                 prev_rvec, _, _ = cv2.aruco.estimatePoseSingleMarkers(prev_corners[i], 0.168, matrix_coefficients,
                                                                        distortion_coefficients)
@@ -63,6 +73,8 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             rot_matrix = cv2.Rodrigues(rvec)[0]
             proj_matrix = np.hstack((rot_matrix, tvec[0][0].reshape((3,1))))
             euler_angles = cv2.decomposeProjectionMatrix(proj_matrix)[6]
+
+            # convert previous rotation vector to euler angles
             if len(prev_corners) > 0:
                 prev_rot_matrix = cv2.Rodrigues(prev_rvec)[0]
                 prev_proj_matrix = np.hstack((prev_rot_matrix, tvec[0][0].reshape((3,1))))
@@ -70,6 +82,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             else:
                 prev_euler_angles = []
 
+            # removing drastic "flickering", when markers appear to change rotation due to poor camera view of it
             flicker = False
             for i in range(len(prev_euler_angles)):
                 diff = abs(prev_euler_angles[i] - euler_angles[i])
@@ -79,6 +92,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
                 print("flicker")
                 continue
 
+            # format information to write
             str_to_write = str(curr_id)
             for element in tvec[0][0]:
                 str_to_write = str_to_write + "," + str(element)
@@ -89,6 +103,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             str_to_write += "," + formatted_curr_datetime + ";\n"
             print(str_to_write)
             
+            # add information to write to the appropriate data
             if curr_id >= 0 and curr_id < 6:
                 robot_data[curr_id] = str_to_write
             if curr_id >= 6 and curr_id < 12:
@@ -100,18 +115,21 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             # Draw Axis
             cv2.drawFrameAxes(frame, matrix_coefficients, distortion_coefficients, rvec, tvec, 0.01)  
 
+    # try to write to robot file
     try:
         with open(robot_file_path, 'w') as file:
             file.writelines(robot_data)
     except PermissionError:
         return
     
+    # try to write to warhead file
     try:
         with open(warhead_file_path, 'w') as file:
             file.writelines(warhead_data)
     except PermissionError:
         return
 
+    # return frame with the axes of all found markers
     return frame
 
 if __name__ == '__main__':
@@ -122,7 +140,6 @@ if __name__ == '__main__':
     ap.add_argument("-t", "--type", type=str, help="Type of ArUCo tag to detect", default="DICT_4X4_100")
     args = vars(ap.parse_args())
 
-    
     if ARUCO_DICT.get(args["type"], None) is None:
         print(f"ArUCo tag type '{args['type']}' is not supported")
         sys.exit(0)
@@ -156,7 +173,6 @@ if __name__ == '__main__':
             print("q")
             break
         i += 1
-        # time.sleep(0.1)
 
     video.release()
     cv2.destroyAllWindows()
