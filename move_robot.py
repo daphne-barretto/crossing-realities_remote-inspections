@@ -33,7 +33,7 @@ async def move_from_text(robot):
                 move_robot_data = file.readlines()[0].split(",")
                 move_robot_data[0] = float(move_robot_data[0])
                 move_robot_data[1] = float(move_robot_data[1])
-                move_robot_data[2] = datetime.strptime(move_robot_data[2], "%04d.%02d.%02d-%02d.%02d.%02d")
+                move_robot_data[2] = datetime.datetime.strptime(move_robot_data[2], '%Y.%m.%d-%H.%M.%S')
         except PermissionError:
             print("couldn't open")
             continue
@@ -42,8 +42,9 @@ async def move_from_text(robot):
 
         # check if data is from the last 1.5 seconds
         if move_robot_data[2] > datetime.datetime.now() - datetime.timedelta(seconds=1.5):
+            print("recent joystick values")
             # parse move robot data into individual y and x values
-            joystick_y_value, joystick_x_value = move_robot_data
+            joystick_y_value, joystick_x_value, _ = move_robot_data
             # if above the x threshold tuned, rotate the amount tuned
             if abs(joystick_x_value) > JOYSTICK_X_THRESHOLD: 
                 if joystick_x_value > 0:
@@ -56,6 +57,8 @@ async def move_from_text(robot):
                     await robot.move(JOYSTICK_Y_TRANSLATE_VALUE)
                 else:
                     await robot.move(-JOYSTICK_Y_TRANSLATE_VALUE)
+        else:
+            print("no recent joystick values")
 
 # play the robot
 robot.play()
