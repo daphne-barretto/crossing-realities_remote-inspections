@@ -53,6 +53,14 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             warhead_data = file.readlines()
     except PermissionError:
         return
+    
+    # try to read room file
+    room_file_path = "C:\\Users\\PrincetonVR\\Documents\\Unreal Projects\\MyProject_VRTemplate_Robots\\Content\\Files\\room_pose.txt"
+    try:
+        with open(room_file_path, 'r') as file:
+            room_data = file.readlines()
+    except PermissionError:
+        return
 
     # If markers are detected
     if len(corners) > 0:
@@ -108,6 +116,8 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
                 robot_data[curr_id] = str_to_write
             if curr_id >= 6 and curr_id < 12:
                 warhead_data[curr_id - 6] = str_to_write
+            if curr_id >= 12 and curr_id < 18:
+                room_data[curr_id - 12] = str_to_write
 
             # Draw a square around the markers
             cv2.aruco.drawDetectedMarkers(frame, corners) 
@@ -126,6 +136,13 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     try:
         with open(warhead_file_path, 'w') as file:
             file.writelines(warhead_data)
+    except PermissionError:
+        return
+    
+    # try to write to room file
+    try:
+        with open(room_file_path, 'w') as file:
+            file.writelines(room_data)
     except PermissionError:
         return
 
