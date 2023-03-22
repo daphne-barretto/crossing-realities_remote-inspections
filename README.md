@@ -1,80 +1,9 @@
-# ArUCo-Markers-Pose-Estimation-Generation-Python
+# Crossing Realities: Connecting the Virtual and the Physical World for Remote Inspections
 
-This repository contains all the code you need to generate an ArucoTag,
-detect ArucoTags in images and videos, and then use the detected tags
-to estimate the pose of the object. In addition to this, I have also 
-included the code required to obtain the calibration matrix for your 
-camera.
+Daphne Barretto, Manuel Kreutle, Alex Glaser
 
-<img src = 'Images/pose_output_image.png' width=400 height=400>
+*Abstract.* Nuclear disarmament is the only solution to the threat of a global nuclear war. Traditional verification approaches of nuclear arms-control agreements have placed a strong emphasis on onsite inspections. Considering the large numbers of U.S. and Russian warheads as well as situations of political tensions or restricted global travel, in-person onsite inspections require a significant amount of time, resources, and trust between parties. Virtual or remote inspections could facilitate and accelerate the disarmament process. While prior work has discussed how virtual reality could potentially be used for training and capacity-building in nuclear disarmament verification, in this work, we extend this idea and explore the possibility of combining virtual and in-person activities to reduce the intrusiveness and cost of inspections. Our approach discusses the use of bidirectional data flows and interaction between the inspector’s virtual environment and the host’s dismantlement facility. We implement a full virtual-reality environment and a physical demonstration to explore the technology and challenges of inspections conducted in virtual reality. For one direction of data flow we use fiducial markers to algorithmically estimate the location and orientation of a warhead, a robot, and other relevant elements of the physical world via an RGB camera, provide the pose estimation data to a virtual reality project in Unreal Engine 5, and use 3D models of the tracked objects to show their relative positions in an immersive virtual reality environment with real-time updates. This provides inspectors in virtual reality with the key information from the physical world. For the other direction of data flow we develop code to control a programmable robot from the virtual reality environment so that it moves in the physical world. This provides inspectors with a way to interact with the physical world even though they are not physically present, as e.g. a radiation detector or other sensors could be mounted on the robot. Combined, this work discusses and demonstrates how virtual reality and robotics could be used for nuclear disarmament.
 
-## 1. ArUCo Marker Generation
-The file `generate_aruco_tags.py` contains the code for ArUCo Marker Generation.
-You need to specify the type of marker you want to generate.
+# Acknowledgements
 
-The command for running is :-  
-`python generate_aruco_tags.py --id 24 --type DICT_5X5_100 --output tags/`
-
-You can find more details on other parameters using `python generate_aruco_tags.py --help`
-
-## 2. ArUCo Marker Detection
-The files `detect_aruco_images.py` and `detect_aruco_video.py` contains the code for detecting
-ArUCo Markers in images and videos respectively. You need to specify the path to the image or 
-video file and the type of marker you want to detect.
-
-The command for running is :-  
-**For inference on images**   
-`python detect_aruco_images.py --image Images/test_image_1.png --type DICT_5X5_100`  
-**For inference using webcam feed**  
-`python detect_aruco_video.py --type DICT_5X5_100 --camera True `  
-**For inference using video file**   
-`python detect_aruco_video.py --type DICT_5X5_100 --camera False --video test_video.mp4`  
-
-You can find more details on other parameters using `python detect_aruco_images.py --help`
-and `python detect_aruco_video.py --help`
-
-## 3. Calibration
-The file `calibration.py` contains the code necessary for calibrating your camera. This step 
-has several pre-requisites. You need to have a folder containing a set of checkerboard images 
-taken using your camera. Make sure that these checkerboard images are of different poses and 
-orientation. You need to provide the path to this directory and the size of the square in metres. 
-You can also change the shape of the checkerboard pattern using the parameters given. Make sure this
-matches with your checkerboard pattern. This code will generate two numpy files `calibration_matrix.npy` and `distortion_coefficients.npy`. These files are required to execute the next step that involves pose estimation. 
-Note that the calibration and distortion numpy files given in my repository is obtained specifically for my camera 
-and might not work well for yours.   
-
-The command for running is :-  
-`python calibration.py --dir calibration_checkerboard/ --square_size 0.024`
-
-You can find more details on other parameters using `python calibration.py --help`  
-
-## 4. Pose Estimation  
-The file `pose_estimation.py` contains the code that performs pose estimation after detecting the 
-ArUCo markers. This is done in real-time for each frame obtained from the web-cam feed. You need to specify 
-the path to the camera calibration matrix and distortion coefficients obtained from the previous step as well 
-as the type for ArUCo marker you want to detect. Note that this code could be easily modified to perform 
-pose estimation on images and video files.  
-
-The command for running is :-  
-`python pose_estimation.py --K_Matrix calibration_matrix.npy --D_Coeff distortion_coefficients.npy --type DICT_5X5_100`  
-
-
-You can find more details on other parameters using `python pose_estimation.py --help`  
-
-## Output
-
-<img src ='Images/output_sample.png' width = 400>  
-
-<img src ='Images/pose_output.gif'>
-
-### <ins>Notes</ins>
-The `utils.py` contains the ArUCo Markers dictionary and the other utility function to display the detected markers.
-
-Feel free to reach out to me in case of any issues.  
-If you find this repo useful in any way please do star ⭐️ it so that others can reap it's benefits as well.
-
-Happy Learning! Keep chasing your dreams!
-
-## References
-1. https://docs.opencv.org/4.x/d9/d6d/tutorial_table_of_content_aruco.html
-2. https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html
+This work utilizes the [ArUCo-Markers-Pose-Estimation-Generation-Python](https://github.com/GSNCodes/ArUCo-Markers-Pose-Estimation-Generation-Python) for pose estimation with ArUCO Markers and [the Python SDK for iRobot Edu robots](https://github.com/iRobotEducation/irobot-edu-python-sdk).
