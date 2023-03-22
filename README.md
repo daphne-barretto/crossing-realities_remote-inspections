@@ -8,6 +8,14 @@ Daphne Barretto, Manuel Kreutle, Alex Glaser
 
 This work utilizes ArUCO Markers for pose estimation, an iRobot Create 3 and its corresponding SDK, and Unreal Engine 5 for virtual reality development.
 
+# Demo
+
+In ```aruco_markers_pose_estimation```, run ```python3 pose_estimation.py --K_Matrix calibration_matrix.npy --D_Coeff distortion_coefficients.npy --type DICT_4X4_100``` to run the pose estimation code. This code calculates the pose estimation for the robot (ids 0-5), the warhead (ids 6-11), and the room (ids 12-17). The pose estimation is placed into ```robot_pose.txt```, ```warhead_pose.txt```, and ```room_pose.txt``` based on the three filepaths in ```pose_estimation.py```.
+
+Run ```move_robot.py``` to make the iRobot Create 3 move according to the joystick values file. The joystick values file written from Unreal Engine 5 and read by ```move_robot.py```, which specifies the filepath to read from. This file can be updated automatically by running the Unreal Engine 5 project simultaneously.
+
+Open the Unreal Engine 5 project, and run using a virtual reality headset. The left joystick is used to send robot commands for turning either direction or moving forward. The player can move around the virtual reality representation of the disarmament location to remotely inspect the environment.
+
 # Acknowledgements
 
 This work utilizes the [ArUCo-Markers-Pose-Estimation-Generation-Python](https://github.com/GSNCodes/ArUCo-Markers-Pose-Estimation-Generation-Python) for pose estimation with ArUCO Markers and [the Python SDK for iRobot Edu robots](https://github.com/iRobotEducation/irobot-edu-python-sdk).
