@@ -152,8 +152,8 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
 if __name__ == '__main__':
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("-k", "--K_Matrix", required=False, help="Path to calibration matrix (numpy file)", default="C:\\Users\\PrincetonVR\\Desktop\\robotics-nuclear-disarmament-code\\ArUCo-Markers-Pose-Estimation-Generation-Python\\calibration_matrix.npy")
-    ap.add_argument("-d", "--D_Coeff", required=False, help="Path to distortion coefficients (numpy file)", default="C:\\Users\\PrincetonVR\\Desktop\\robotics-nuclear-disarmament-code\\ArUCo-Markers-Pose-Estimation-Generation-Python\\distortion_coefficients.npy")
+    ap.add_argument("-k", "--K_Matrix", required=False, help="Path to calibration matrix (numpy file)", default="C:\\Users\\PrincetonVR\\Desktop\\robotics-nuclear-disarmament-code\\ArUCo-Markers-Pose-Estimation-Generation-Python\\aruco_markers_pose_estimation\\calibration_matrix.npy")
+    ap.add_argument("-d", "--D_Coeff", required=False, help="Path to distortion coefficients (numpy file)", default="C:\\Users\\PrincetonVR\\Desktop\\robotics-nuclear-disarmament-code\\ArUCo-Markers-Pose-Estimation-Generation-Python\\aruco_markers_pose_estimation\\distortion_coefficients.npy")
     ap.add_argument("-t", "--type", type=str, help="Type of ArUCo tag to detect", default="DICT_4X4_100")
     args = vars(ap.parse_args())
 
