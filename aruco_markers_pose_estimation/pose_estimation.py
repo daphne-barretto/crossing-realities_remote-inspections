@@ -109,7 +109,6 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             curr_datetime = datetime.now()
             formatted_curr_datetime = "%04d.%02d.%02d-%02d.%02d.%02d" % (curr_datetime.year, curr_datetime.month, curr_datetime.day, curr_datetime.hour, curr_datetime.minute, curr_datetime.second)
             str_to_write += "," + formatted_curr_datetime + ";\n"
-            print(str_to_write)
             
             # add information to write to the appropriate data
             if curr_id >= 0 and curr_id < 6:
@@ -124,6 +123,30 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
 
             # Draw Axis
             cv2.drawFrameAxes(frame, matrix_coefficients, distortion_coefficients, rvec, tvec, 0.01)  
+
+    print("robot_data")
+    print(robot_data[0], end='\r')
+    print(robot_data[1], end='\r')
+    print(robot_data[2], end='\r')
+    print(robot_data[3], end='\r')
+    print(robot_data[4], end='\r')
+    print(robot_data[5], end='\r')
+
+    print("warhead_data")
+    print(warhead_data[0], end='\r')
+    print(warhead_data[1], end='\r')
+    print(warhead_data[2], end='\r')
+    print(warhead_data[3], end='\r')
+    print(warhead_data[4], end='\r')
+    print(warhead_data[5], end='\r')
+
+    print("room_data")
+    print(room_data[0], end='\r')
+    print(room_data[1], end='\r')
+    print(room_data[2], end='\r')
+    print(room_data[3], end='\r')
+    print(room_data[4], end='\r')
+    print(room_data[5], end='\r')
 
     # try to write to robot file
     try:
